@@ -56,6 +56,8 @@ public class ScheduleService {
         schedule.setStartDate(reqDto.getStartDate());
         schedule.setEndDate(reqDto.getEndDate());
 
+        scheduleRepository.save(schedule); // 생략 가능하나, 생략하면 Auditing 기능이 동작 안함
+
         return new EditResponseDto("일정이 성공적으로 수정되었습니다.", schedule);
     }
 }
