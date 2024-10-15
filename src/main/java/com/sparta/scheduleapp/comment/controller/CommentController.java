@@ -28,14 +28,21 @@ public class CommentController {
     @GetMapping("/schedule/{scheduleId}/comments")
     public ResponseEntity<ResponseDto> retrieveComments(@PathVariable Long scheduleId) {
 
-        ResponseDto resDto = commentService.retrieveComments(scheduleId);
+        ResponseDto resDto = commentService.retrieveComment(scheduleId);
         return ResponseEntity.status(HttpStatus.OK).body(resDto);
     }
 
     @PutMapping("/schedule/{scheduleId}/comments/{commentId}")
     public ResponseEntity<ResponseDto> editComment(@PathVariable Long scheduleId, @PathVariable Long commentId, @RequestBody EditCommentRequestDto reqDto) {
 
-        ResponseDto resDto = commentService.editComments(scheduleId, commentId, reqDto);
+        ResponseDto resDto = commentService.editComment(scheduleId, commentId, reqDto);
+        return ResponseEntity.status(HttpStatus.OK).body(resDto);
+    }
+
+    @DeleteMapping("/schedule/{scheduleId}/comments/{commentId}")
+    public ResponseEntity<ResponseDto> deleteComment(@PathVariable Long scheduleId, @PathVariable Long commentId) {
+
+        ResponseDto resDto = commentService.deleteComment(scheduleId, commentId);
         return ResponseEntity.status(HttpStatus.OK).body(resDto);
     }
 }
