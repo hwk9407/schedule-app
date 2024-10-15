@@ -4,11 +4,11 @@ import com.sparta.scheduleapp.entity.Schedule;
 import lombok.Getter;
 
 @Getter
-public class RetrieveScheduleResponseDto extends ResponseDto {
+public class RetrieveResponseDto extends ResponseDto {
 
     private ScheduleDto schedule;
 
-    public RetrieveScheduleResponseDto(String message, Schedule schedule) {
+    public RetrieveResponseDto(String message, Schedule schedule) {
         super(message);
         this.schedule = new ScheduleDto(schedule);
     }

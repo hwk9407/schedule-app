@@ -1,8 +1,8 @@
 package com.sparta.scheduleapp.schedule.controller;
 
-import com.sparta.scheduleapp.schedule.dto.request.CreateScheduleRequestDto;
+import com.sparta.scheduleapp.schedule.dto.request.CreateRequestDto;
+import com.sparta.scheduleapp.schedule.dto.request.EditRequestDto;
 import com.sparta.scheduleapp.schedule.dto.response.ResponseDto;
-import com.sparta.scheduleapp.schedule.dto.response.RetrieveListSchedulesResponseDto;
 import com.sparta.scheduleapp.schedule.service.ScheduleService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -22,7 +22,7 @@ public class scheduleController {
 
 
     @PostMapping("/schedule")
-    public ResponseEntity<ResponseDto> createSchedule(@RequestBody CreateScheduleRequestDto reqDto) {
+    public ResponseEntity<ResponseDto> createSchedule(@RequestBody CreateRequestDto reqDto) {
 
         ResponseDto resDto = scheduleService.createSchedule(reqDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(resDto);
@@ -42,4 +42,10 @@ public class scheduleController {
         return ResponseEntity.status(HttpStatus.OK).body(resDto);
     }
 
+    @PutMapping("/schedule/{scheduleId}")
+    public ResponseEntity<ResponseDto> updateSchedule(@PathVariable Long scheduleId, @RequestBody EditRequestDto reqDto) {
+
+        ResponseDto responseDto = scheduleService.updateSchedule(scheduleId, reqDto);
+        return ResponseEntity.status(HttpStatus.OK).body(responseDto);
+    }
 }
