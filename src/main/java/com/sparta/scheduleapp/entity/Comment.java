@@ -17,9 +17,18 @@ public class Comment extends BaseAuditingEntity {
     private Long commentId;
 
     @Column(nullable = false)
-    private String comment;
+    private String userName;
+
+    @Column(nullable = false)
+    private String content;
 
     @ManyToOne
     @JoinColumn(name = "scheduleId")
     private Schedule schedule;
+
+    public Comment(Schedule schedule, String userName, String content) {
+        this.schedule = schedule;
+        this.userName = userName;
+        this.content = content;
+    }
 }
