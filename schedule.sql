@@ -17,4 +17,18 @@ CREATE TABLE IF NOT EXISTS schedule (
 );
 
 
-## SQL DML 관련
+# comment 테이블 생성
+create table comment (
+    comment_id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    created_date DATETIME,
+    modified_date DATETIME,
+    content varchar(255) NOT NULL,
+    user_name varchar(255) NOT NULL,
+    schedule_id BIGINT
+);
+
+# comment 테이블 FK 추가
+ALTERR TABLE comment
+    ADD CONSTRAINT FKsy51iks4dgapu66gfj3mnykch
+        FOREIGN KEY (schedule_id)
+            REFERENCES schedule (schedule_id)
