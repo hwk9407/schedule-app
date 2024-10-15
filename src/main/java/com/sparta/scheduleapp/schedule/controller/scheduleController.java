@@ -23,14 +23,22 @@ public class scheduleController {
 
     @PostMapping("/schedule")
     public ResponseEntity<ResponseDto> createSchedule(@RequestBody CreateScheduleRequestDto reqDto) {
+
         ResponseDto resDto = scheduleService.createSchedule(reqDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(resDto);
     }
 
     @GetMapping("/schedule")
     public ResponseEntity<ResponseDto> retrieveAllSchedule() {
-        ResponseDto resDto = scheduleService.retrieveAllSchedules();
 
+        ResponseDto resDto = scheduleService.retrieveAllSchedules();
+        return ResponseEntity.status(HttpStatus.OK).body(resDto);
+    }
+
+    @GetMapping("/schedule/{scheduleId}")
+    public ResponseEntity<ResponseDto> retrieveSchedule(@PathVariable Long scheduleId) {
+
+        ResponseDto resDto = scheduleService.retrieveSchedule(scheduleId);
         return ResponseEntity.status(HttpStatus.OK).body(resDto);
     }
 
