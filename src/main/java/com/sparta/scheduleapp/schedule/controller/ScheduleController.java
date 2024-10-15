@@ -4,19 +4,17 @@ import com.sparta.scheduleapp.schedule.dto.request.CreateRequestDto;
 import com.sparta.scheduleapp.schedule.dto.request.EditRequestDto;
 import com.sparta.scheduleapp.schedule.dto.response.ResponseDto;
 import com.sparta.scheduleapp.schedule.service.ScheduleService;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@Slf4j
 @RequestMapping("/api")
 @RestController
-public class scheduleController {
+public class ScheduleController {
 
     private final ScheduleService scheduleService;
 
-    public scheduleController(ScheduleService scheduleService) {
+    public ScheduleController(ScheduleService scheduleService) {
         this.scheduleService = scheduleService;
     }
 
