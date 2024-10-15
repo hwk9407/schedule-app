@@ -29,6 +29,6 @@ create table comment (
 
 # comment 테이블 FK 추가
 ALTERR TABLE comment
-    ADD CONSTRAINT FKsy51iks4dgapu66gfj3mnykch
+    ADD CONSTRAINT fk_comments_schedule_id
         FOREIGN KEY (schedule_id)
             REFERENCES schedule (schedule_id)
