@@ -27,7 +27,8 @@ public class ScheduleService {
 
     @Transactional
     public ResponseDto createSchedule(CreateRequestDto reqDto) {
-        Schedule schedule = new Schedule(reqDto.getUserName(),
+        Schedule schedule = new Schedule(
+                reqDto.getUserName(),
                 reqDto.getTitle(),
                 reqDto.getContent(),
                 reqDto.getStartDate(),
