@@ -46,29 +46,29 @@ create table user (
 
 # 유저 이메일 UNIQUE 설정
 alter table user
-    drop index UKob8kqyqqgmefl0aco34akdtpe;
+    drop index user_email_unique;
 alter table user
-    add constraint UKob8kqyqqgmefl0aco34akdtpe unique (email);
+    add constraint user_email_unique unique (email);
 
 # 유저 이름 UNIQUE 설정
 alter table user
-    drop index UKlqjrcobrh9jc8wpcar64q1bfh;
+    drop index user_name_unique;
 alter table user
-    add constraint UKlqjrcobrh9jc8wpcar64q1bfh unique (user_name);
+    add constraint user_name_unique unique (user_name);
 
 # user_schedule 중간 테이블 생성
 create table user_schedule (
     id BIGINT NOT NULL auto_increment PRIMARY KEY,
     schedule_id BIGINT,
     user_id BIGINT
-)
+);
 
 # user_schedule 중간 테이블 FK 설정
 alter table user_schedule
-    add constraint FKdd4cwg959bmy4551iiivx4wdw
+    add constraint fk_user_schedule_schedule_id
         foreign key (schedule_id)
             references schedule (schedule_id);
 alter table user_schedule
-    add constraint FKmsyiiyw4bv8y8sv4dbh6k481a
+    add constraint fk_user_schedule_user_id
         foreign key (user_id)
             references user (user_id);

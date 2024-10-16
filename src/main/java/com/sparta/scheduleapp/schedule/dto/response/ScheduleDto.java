@@ -1,14 +1,16 @@
 package com.sparta.scheduleapp.schedule.dto.response;
 
 import com.sparta.scheduleapp.entity.Schedule;
+import com.sparta.scheduleapp.entity.User;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 public class ScheduleDto {
     private Long scheduleId;
-    private String userName;
+    private List<Long> userIds;
     private String title;
     private String content;
     private int commentCount;
@@ -19,7 +21,9 @@ public class ScheduleDto {
 
     public ScheduleDto(Schedule schedule) {
         this.scheduleId = schedule.getScheduleId();
-        this.userName = schedule.getUserName();
+        this.userIds = schedule.getUsers().stream()
+                .map(User::getUserId)
+                .toList();
         this.title = schedule.getTitle();
         this.content = schedule.getContent();
         this.commentCount = schedule.getCommentsCount();

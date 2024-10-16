@@ -2,11 +2,15 @@ package com.sparta.scheduleapp.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.List;
 
 @Entity
 @Getter
 @Setter
+@NoArgsConstructor
 @Table(name = "userSchedule")
 public class UserSchedule {
     @Id
@@ -21,4 +25,8 @@ public class UserSchedule {
     @JoinColumn(name = "userId")
     private User user;
 
+    public UserSchedule(User user, Schedule schedule) {
+        this.user = user;
+        this.schedule = schedule;
+    }
 }
