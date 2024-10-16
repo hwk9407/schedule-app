@@ -2,6 +2,7 @@ package com.sparta.scheduleapp.user.controller;
 
 import com.sparta.scheduleapp.user.dto.request.CreateUserRequestDto;
 import com.sparta.scheduleapp.user.dto.response.ResponseDto;
+import com.sparta.scheduleapp.user.dto.response.UserDto;
 import com.sparta.scheduleapp.user.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -28,16 +29,16 @@ public class UserController {
     public ResponseEntity<ResponseDto> retrieveAllUsers() {
 
         ResponseDto resDto = userService.retrieveAllUsers();
-        return ResponseEntity.status(HttpStatus.CREATED).body(resDto);
+        return ResponseEntity.status(HttpStatus.OK).body(resDto);
+    }
+
+    @GetMapping("/users/{id}")
+    public ResponseEntity<ResponseDto> retrieveUser(@PathVariable Long id) {
+        ResponseDto resDto = userService.retrieveUser(id);
+        return ResponseEntity.status(HttpStatus.OK).body(resDto);
     }
 
 /*
-    @GetMapping("/{id}")
-    public ResponseEntity<ResponseDto> getUserById(@PathVariable Long id) {
-        ResponseDto resDto = userService.getUserById(id);
-        return ResponseEntity.ok(user);
-    }
-
     @PutMapping("/{id}")
     public ResponseEntity<ResponseDto> updateUser(@PathVariable Long id, @RequestBody UserDto userDto) {
         ResponseDto resDto = userService.updateUser(id, userDto);

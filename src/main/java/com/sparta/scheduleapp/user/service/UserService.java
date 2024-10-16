@@ -5,7 +5,9 @@ import com.sparta.scheduleapp.user.dto.request.CreateUserRequestDto;
 import com.sparta.scheduleapp.user.dto.response.AddUserResponseDto;
 import com.sparta.scheduleapp.user.dto.response.ResponseDto;
 import com.sparta.scheduleapp.user.dto.response.RetrieveUserLIstResponseDto;
+import com.sparta.scheduleapp.user.dto.response.RetrieveUserResponseDto;
 import com.sparta.scheduleapp.user.repository.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -35,5 +37,10 @@ public class UserService {
         List<User> users = userRepository.findAll();
         users.forEach(System.out::println);
         return new RetrieveUserLIstResponseDto("전체 유저를 성공적으로 조회하였습니다.", users);
+    }
+
+    public ResponseDto retrieveUser(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("존재하지 않는 유저입니다."));
+        return new RetrieveUserResponseDto("유저를 성공적으로 조회하였습니다.", user);
     }
 }
