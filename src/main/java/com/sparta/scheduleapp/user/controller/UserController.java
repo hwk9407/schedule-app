@@ -24,13 +24,14 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).body(resDto);
     }
 
-/*
-    @GetMapping
-    public ResponseEntity<ResponseDto> getAllUsers() {
-        ResponseDto resDto = userService.getAllUsers();
-        return ResponseEntity.ok(users);
+    @GetMapping("/users")
+    public ResponseEntity<ResponseDto> retrieveAllUsers() {
+
+        ResponseDto resDto = userService.retrieveAllUsers();
+        return ResponseEntity.status(HttpStatus.CREATED).body(resDto);
     }
 
+/*
     @GetMapping("/{id}")
     public ResponseEntity<ResponseDto> getUserById(@PathVariable Long id) {
         ResponseDto resDto = userService.getUserById(id);
