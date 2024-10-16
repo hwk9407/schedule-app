@@ -41,7 +41,7 @@ public class UserController {
     }
 
     @PutMapping("/users/{userId}")
-    public ResponseEntity<ResponseDto> editUser(@PathVariable Long userId, @RequestBody EditUserRequestDto reqDto) {
+    public ResponseEntity<ResponseDto> editUser(@PathVariable Long userId, @RequestBody @Valid EditUserRequestDto reqDto) {
         ResponseDto resDto = userService.editUser(userId, reqDto);
         return ResponseEntity.status(HttpStatus.OK).body(resDto);
     }

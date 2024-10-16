@@ -4,6 +4,7 @@ import com.sparta.scheduleapp.comment.dto.request.AddCommentRequestDto;
 import com.sparta.scheduleapp.comment.dto.request.EditCommentRequestDto;
 import com.sparta.scheduleapp.comment.dto.response.ResponseDto;
 import com.sparta.scheduleapp.comment.service.CommentService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,7 +21,7 @@ public class CommentController {
 
 
     @PostMapping("/schedule/{scheduleId}/comments")
-    public ResponseEntity<ResponseDto> addComment(@PathVariable Long scheduleId, @RequestBody AddCommentRequestDto reqDto) {
+    public ResponseEntity<ResponseDto> addComment(@PathVariable Long scheduleId, @RequestBody @Valid AddCommentRequestDto reqDto) {
 
         ResponseDto resDto = commentService.addComment(scheduleId, reqDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(resDto);
@@ -33,7 +34,7 @@ public class CommentController {
     }
 
     @PutMapping("/schedule/{scheduleId}/comments/{commentId}")
-    public ResponseEntity<ResponseDto> editComment(@PathVariable Long scheduleId, @PathVariable Long commentId, @RequestBody EditCommentRequestDto reqDto) {
+    public ResponseEntity<ResponseDto> editComment(@PathVariable Long scheduleId, @PathVariable Long commentId, @RequestBody @Valid EditCommentRequestDto reqDto) {
 
         ResponseDto resDto = commentService.editComment(scheduleId, commentId, reqDto);
         return ResponseEntity.status(HttpStatus.OK).body(resDto);
