@@ -17,7 +17,7 @@ import java.util.List;
 public class User extends BaseAuditingEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
 
     @Column(unique = true, nullable = false)
@@ -31,6 +31,12 @@ public class User extends BaseAuditingEntity {
     private Gender gender;
 
 
-    @OneToMany(mappedBy = "schedule", cascade = CascadeType.REMOVE) // 유저가 삭제되면 연결된 중간테이블 데이터 삭제
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE) // 유저가 삭제되면 연결된 중간테이블 데이터 삭제
     List<UserSchedule> userSchedules = new ArrayList<>();
+
+    public User(String userName, String email, Gender gender) {
+        this.userName = userName;
+        this.email = email;
+        this.gender = gender;
+    }
 }
