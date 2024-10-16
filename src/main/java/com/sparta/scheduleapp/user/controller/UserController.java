@@ -1,6 +1,8 @@
 package com.sparta.scheduleapp.user.controller;
 
+import com.sparta.scheduleapp.schedule.dto.request.EditRequestDto;
 import com.sparta.scheduleapp.user.dto.request.CreateUserRequestDto;
+import com.sparta.scheduleapp.user.dto.request.EditUserRequestDto;
 import com.sparta.scheduleapp.user.dto.response.ResponseDto;
 import com.sparta.scheduleapp.user.dto.response.UserDto;
 import com.sparta.scheduleapp.user.service.UserService;
@@ -32,19 +34,19 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(resDto);
     }
 
-    @GetMapping("/users/{id}")
-    public ResponseEntity<ResponseDto> retrieveUser(@PathVariable Long id) {
-        ResponseDto resDto = userService.retrieveUser(id);
+    @GetMapping("/users/{userId}")
+    public ResponseEntity<ResponseDto> retrieveUser(@PathVariable Long userId) {
+        ResponseDto resDto = userService.retrieveUser(userId);
+        return ResponseEntity.status(HttpStatus.OK).body(resDto);
+    }
+
+    @PutMapping("/users/{userId}")
+    public ResponseEntity<ResponseDto> editUser(@PathVariable Long userId, @RequestBody EditUserRequestDto reqDto) {
+        ResponseDto resDto = userService.editUser(userId, reqDto);
         return ResponseEntity.status(HttpStatus.OK).body(resDto);
     }
 
 /*
-    @PutMapping("/{id}")
-    public ResponseEntity<ResponseDto> updateUser(@PathVariable Long id, @RequestBody UserDto userDto) {
-        ResponseDto resDto = userService.updateUser(id, userDto);
-        return ResponseEntity.ok(updatedUser);
-    }
-
     @DeleteMapping("/{id}")
     public ResponseEntity<ResponseDto> deleteUser(@PathVariable Long id) {
         ResponseDto resDto = userService.deleteUser(id);
