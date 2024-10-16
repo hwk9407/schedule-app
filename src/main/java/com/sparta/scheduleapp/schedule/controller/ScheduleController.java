@@ -27,9 +27,14 @@ public class ScheduleController {
     }
 
     @GetMapping("/schedule")
-    public ResponseEntity<ResponseDto> retrieveAllSchedule() {
+    public ResponseEntity<ResponseDto> retrieveAllSchedule(
+            @RequestParam(value = "page", defaultValue = "1") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size
+//            @RequestParam("sortBy") int sortBy, 수정일로 고정
+//            @RequestParam("isAsc") int isAsc 내림차순으로 고정
+            ) {
 
-        ResponseDto resDto = scheduleService.retrieveAllSchedules();
+        ResponseDto resDto = scheduleService.retrieveAllSchedules(page - 1, size);
         return ResponseEntity.status(HttpStatus.OK).body(resDto);
     }
 

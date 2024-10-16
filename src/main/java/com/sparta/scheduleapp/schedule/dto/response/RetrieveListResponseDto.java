@@ -1,7 +1,8 @@
 package com.sparta.scheduleapp.schedule.dto.response;
 
-import com.sparta.scheduleapp.entity.Schedule;
+import com.sparta.scheduleapp.common.pagination.Pagination;
 import lombok.Getter;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -9,11 +10,14 @@ import java.util.List;
 public class RetrieveListResponseDto extends ResponseDto {
 
     private List<ScheduleDto> schedules;
+    private Pagination pagination;
 
-    public RetrieveListResponseDto(String message, List<Schedule> schedules) {
+    public RetrieveListResponseDto(String message, Page<ScheduleDto> schedules) {
         super(message);
-        this.schedules = schedules.stream()
-                .map(ScheduleDto::new)
-                .toList();
+        this.schedules = schedules.getContent();
+        this.pagination = new Pagination(schedules);
+//        this.schedules = schedules.stream()
+//                .map(ScheduleDto::new)
+//                .toList();
     }
 }

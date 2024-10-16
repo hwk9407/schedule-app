@@ -11,6 +11,7 @@ public class ScheduleDto {
     private String userName;
     private String title;
     private String content;
+    private int commentCount;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
     private LocalDateTime createdDate;
@@ -21,6 +22,7 @@ public class ScheduleDto {
         this.userName = schedule.getUserName();
         this.title = schedule.getTitle();
         this.content = schedule.getContent();
+        this.commentCount = schedule.getCommentsCount();
         this.startDate = schedule.getStartDate();
         this.endDate = schedule.getEndDate();
         this.createdDate = schedule.getCreatedDate();

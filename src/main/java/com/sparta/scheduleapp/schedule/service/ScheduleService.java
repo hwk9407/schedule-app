@@ -6,6 +6,10 @@ import com.sparta.scheduleapp.schedule.dto.request.EditRequestDto;
 import com.sparta.scheduleapp.schedule.dto.response.*;
 import com.sparta.scheduleapp.schedule.repository.ScheduleRepository;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,10 +37,16 @@ public class ScheduleService {
         return new CreateResponseDto("일정을 성공적으로 등록하였습니다.", schedule.getScheduleId());
     }
 
-    public ResponseDto retrieveAllSchedules() {
-        List<Schedule> schedules = scheduleRepository.findAll();
+    public ResponseDto retrieveAllSchedules(int page, int size) {
+        // 페이지네이션
+        Sort.Direction direction = Sort.Direction.DESC;
+        Sort sortBy = Sort.by(direction, "modifiedDate");
+        Pageable pageable = PageRequest.of(page, size, sortBy);
 
-        return new RetrieveListResponseDto("일정을 성공적으로 조회하였습니다.", schedules);
+        Page<Schedule> schedules = scheduleRepository.findAll(pageable);
+        Page<ScheduleDto> scheduleDtos = schedules.map(ScheduleDto::new);
+
+        return new RetrieveListResponseDto("일정을 성공적으로 조회하였습니다.", scheduleDtos);
     }
 
     public ResponseDto retrieveSchedule(Long scheduleId) {
