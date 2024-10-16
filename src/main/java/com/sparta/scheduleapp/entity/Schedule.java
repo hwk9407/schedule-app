@@ -38,6 +38,9 @@ public class Schedule extends BaseAuditingEntity {
     @OneToMany(mappedBy = "schedule", cascade = CascadeType.REMOVE) // 일정이 삭제되면 댓글도 함께 삭제됨.
     List<Comment> comments = new ArrayList<>();
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE) // 일정이 삭제되면 연결된 중간테이블 데이터 삭제
+    List<UserSchedule> userSchedules = new ArrayList<>();
+
     public Schedule(String userName, String title, String content, LocalDateTime startDate, LocalDateTime endDate) {
         this.userName = userName;
         this.title = title;
@@ -56,6 +59,10 @@ public class Schedule extends BaseAuditingEntity {
             throw new IllegalArgumentException("종료일은 반드시 시작일보다 이후 날짜여야 합니다.");
         }
 
+    }
+
+    public int getCommentsCount() {
+        return comments.size();
     }
 
     public void addComment(Comment comment) {
