@@ -34,6 +34,9 @@ public class User extends BaseAuditingEntity {
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE) // 유저가 삭제되면 연결된 중간테이블 데이터 삭제
     List<UserSchedule> userSchedules = new ArrayList<>();
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE) // 유저가 삭제되면 연결된 댓글 데이터 삭제
+    List<Comment> comments = new ArrayList<>();
+
     public User(String userName, String email, Gender gender) {
         this.userName = userName;
         this.email = email;

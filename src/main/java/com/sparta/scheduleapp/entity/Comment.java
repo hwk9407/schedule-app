@@ -16,8 +16,6 @@ public class Comment extends BaseAuditingEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long commentId;
 
-    @Column(nullable = false)
-    private String userName;
 
     @Column(nullable = false)
     private String content;
@@ -26,9 +24,13 @@ public class Comment extends BaseAuditingEntity {
     @JoinColumn(name = "scheduleId")
     private Schedule schedule;
 
-    public Comment(Schedule schedule, String userName, String content) {
+    @ManyToOne
+    @JoinColumn(name = "userId")
+    private User user;
+
+    public Comment(Schedule schedule, User user, String content) {
         this.schedule = schedule;
-        this.userName = userName;
+        this.user = user;
         this.content = content;
     }
 }

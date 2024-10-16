@@ -6,7 +6,9 @@ import com.sparta.scheduleapp.comment.dto.response.*;
 import com.sparta.scheduleapp.comment.repository.CommentRepository;
 import com.sparta.scheduleapp.entity.Comment;
 import com.sparta.scheduleapp.entity.Schedule;
+import com.sparta.scheduleapp.entity.User;
 import com.sparta.scheduleapp.schedule.repository.ScheduleRepository;
+import com.sparta.scheduleapp.user.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,15 +23,17 @@ public class CommentService {
     private final CommentRepository commentRepository;
 
     private final ScheduleRepository scheduleRepository;
+    private final UserRepository userRepository;
 
     @Transactional
     public ResponseDto addComment(Long scheduleId, AddCommentRequestDto reqDto) {
+        User user = userRepository.findById(reqDto.getUserId()).orElseThrow(() -> new EntityNotFoundException("존재하지 않는 유저입니다."));
         Schedule schedule = scheduleRepository.findByScheduleId(scheduleId).orElseThrow(() -> new EntityNotFoundException("존재하지 않는 일정입니다."));
         Comment comment = new Comment(
                 schedule,
-                reqDto.getUserName(),
+                user,
                 reqDto.getContent()
-                );
+        );
         commentRepository.save(comment);
 
         return new AddCommentResponseDto("댓글을 성공적으로 등록하였습니다.", comment.getCommentId());
@@ -43,7 +47,8 @@ public class CommentService {
     }
 
     public ResponseDto editComment(Long scheduleId, Long commentId, EditCommentRequestDto reqDto) {
-        Schedule schedule = scheduleRepository.findByScheduleId(scheduleId).orElseThrow(() -> new EntityNotFoundException("존재하지 않는 일정입니다."));
+
+        scheduleRepository.findByScheduleId(scheduleId).orElseThrow(() -> new EntityNotFoundException("존재하지 않는 일정입니다."));
         Comment comment = commentRepository.getByCommentId(commentId).orElseThrow(() -> new EntityNotFoundException("존재하지 않는 댓글입니다."));
 
         comment.setContent(reqDto.getContent());
