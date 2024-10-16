@@ -82,7 +82,7 @@ public class ScheduleService {
     }
 
     @Transactional
-    public ResponseDto updateSchedule(Long scheduleId, EditRequestDto reqDto) {
+    public ResponseDto editSchedule(Long scheduleId, EditRequestDto reqDto) {
         // 빈 객체 반환 시 에러 상태 코드 404와 함께 처리 해야함
         Schedule schedule = scheduleRepository.findByScheduleId(scheduleId).orElseThrow(() -> new EntityNotFoundException("존재하지 않는 일정입니다."));
 

@@ -42,4 +42,10 @@ public class User extends BaseAuditingEntity {
         this.email = email;
         this.gender = gender;
     }
+
+    public List<Schedule> getSchedules() {
+        return userSchedules.stream()
+                .map(UserSchedule::getSchedule)
+                .toList();
+    }
 }

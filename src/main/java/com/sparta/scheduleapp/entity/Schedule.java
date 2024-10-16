@@ -38,7 +38,7 @@ public class Schedule extends BaseAuditingEntity {
     @OneToMany(mappedBy = "schedule", cascade = CascadeType.REMOVE) // 일정이 삭제되면 댓글도 함께 삭제됨.
     List<Comment> comments = new ArrayList<>();
 
-    @OneToMany(mappedBy = "schedule", cascade = CascadeType.REMOVE) // 일정이 삭제되면 연결된 중간테이블 데이터 삭제
+    @OneToMany(mappedBy = "schedule", cascade = CascadeType.REMOVE, orphanRemoval = true) // 일정이 삭제되면 연결된 중간테이블 데이터 삭제
     List<UserSchedule> userSchedules = new ArrayList<>();
 
     public Schedule(String title, String content, LocalDateTime startDate, LocalDateTime endDate) {
