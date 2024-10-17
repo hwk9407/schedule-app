@@ -19,6 +19,17 @@
 
 <br>
 
+### 프로젝트 실행법
+1. application.properties에서 mysql 설정에 맞게 아이디 비밀번호 설정
+2. schedule_app DB를 생성 : `CREATE DATABASE schedule_app;`
+3. 환경 변수에 MY_SECRET_KEY 추가하여 비밀키 추가(추가 후 IDE 어플리케이션 재실행)
+4. postman으로 api명세서의 요청 형식에 맞춰서 요청
+5. 인증 필요 시 Header에 Authorization 부분에 로그인 후 응답받아 사용, 이후 Header에 함께 요청 
+
+
+
+<br>
+
 ### 필수 기능 구현
 - #### Lv 0. API 명세 및 ERD 작성
   - #### [API 명세서](https://buttery-caravel-ad6.notion.site/schedule-app-11fe7b55e4d18052a596e4944281864a?pvs=4)
