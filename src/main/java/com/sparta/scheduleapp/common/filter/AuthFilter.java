@@ -1,6 +1,7 @@
 package com.sparta.scheduleapp.common.filter;
 
 
+import com.sparta.scheduleapp.common.exception.TokenNotFoundException;
 import com.sparta.scheduleapp.common.jwt.JwtUtil;
 import com.sparta.scheduleapp.entity.User;
 import com.sparta.scheduleapp.user.repository.UserRepository;
@@ -45,7 +46,7 @@ public class AuthFilter implements Filter {
 
 
             if (!StringUtils.hasText(tokenValue)) { // 토큰이 존재하지 않다면 예외 처리
-                throw new IllegalArgumentException("토큰을 찾을 수 없습니다.");
+                throw new TokenNotFoundException("토큰을 찾을 수 없습니다.");
             }
 
 

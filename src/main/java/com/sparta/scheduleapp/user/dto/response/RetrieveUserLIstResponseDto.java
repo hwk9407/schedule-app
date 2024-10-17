@@ -1,5 +1,6 @@
 package com.sparta.scheduleapp.user.dto.response;
 
+import com.sparta.scheduleapp.common.dto.ResponseDto;
 import com.sparta.scheduleapp.entity.User;
 import lombok.Getter;
 
