@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 @Getter
 public class CommentDto {
     private Long commentId;
-    private String userName;
+    private Long userId;
     private String content;
     private Long scheduleId;
     private LocalDateTime createdDate;
@@ -16,7 +16,7 @@ public class CommentDto {
 
     public CommentDto(Comment comment) {
         this.commentId = comment.getCommentId();
-        this.userName = comment.getUserName();
+        this.userId = comment.getUser().getUserId();
         this.content = comment.getContent();
         this.scheduleId = comment.getSchedule().getScheduleId();
         this.createdDate = comment.getCreatedDate();

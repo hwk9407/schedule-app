@@ -5,32 +5,28 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
-@Table(name = "comment")
-public class Comment extends BaseAuditingEntity {
-
+@Table(name = "userSchedule")
+public class UserSchedule {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long commentId;
+    private Long id;
 
-
-    @Column(nullable = false)
-    private String content;
-
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY) // 지연로딩
     @JoinColumn(name = "scheduleId")
     private Schedule schedule;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY) // 지연로딩
     @JoinColumn(name = "userId")
     private User user;
 
-    public Comment(Schedule schedule, User user, String content) {
-        this.schedule = schedule;
+    public UserSchedule(User user, Schedule schedule) {
         this.user = user;
-        this.content = content;
+        this.schedule = schedule;
     }
 }

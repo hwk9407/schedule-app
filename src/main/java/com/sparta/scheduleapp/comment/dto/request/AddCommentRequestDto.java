@@ -1,9 +1,12 @@
 package com.sparta.scheduleapp.comment.dto.request;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 
 @Getter
 public class AddCommentRequestDto {
-    private String userName;
+    @NotNull
+    private Long userId;
+    @NotNull
     private String content;
 }

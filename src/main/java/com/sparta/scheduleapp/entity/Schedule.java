@@ -20,8 +20,8 @@ public class Schedule extends BaseAuditingEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long scheduleId;
 
-    @Column(nullable = false, unique = true)
-    private String userName;
+//    @Column(nullable = false, unique = true)
+//    private String userName;
 
     @Column(nullable = false)
     private String title;
@@ -38,8 +38,10 @@ public class Schedule extends BaseAuditingEntity {
     @OneToMany(mappedBy = "schedule", cascade = CascadeType.REMOVE) // 일정이 삭제되면 댓글도 함께 삭제됨.
     List<Comment> comments = new ArrayList<>();
 
-    public Schedule(String userName, String title, String content, LocalDateTime startDate, LocalDateTime endDate) {
-        this.userName = userName;
+    @OneToMany(mappedBy = "schedule", cascade = CascadeType.REMOVE, orphanRemoval = true) // 일정이 삭제되면 연결된 중간테이블 데이터 삭제
+    List<UserSchedule> userSchedules = new ArrayList<>();
+
+    public Schedule(String title, String content, LocalDateTime startDate, LocalDateTime endDate) {
         this.title = title;
         this.content = content;
         this.startDate = startDate;
@@ -58,6 +60,10 @@ public class Schedule extends BaseAuditingEntity {
 
     }
 
+    public int getCommentsCount() {
+        return comments.size();
+    }
+
     public void addComment(Comment comment) {
         comments.add(comment);
         comment.setSchedule(this);
@@ -67,5 +73,11 @@ public class Schedule extends BaseAuditingEntity {
     public void removeComment(Comment comment) {
         comments.remove(comment);
         comment.setSchedule(null); // 부모 외래 키를 수동으로 null로 설정
+    }
+
+    public List<User> getUsers() {
+        return userSchedules.stream()
+                .map(UserSchedule::getUser)
+                .toList();
     }
 }
