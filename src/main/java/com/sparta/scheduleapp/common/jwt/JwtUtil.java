@@ -49,13 +49,13 @@ public class JwtUtil {
         key = Keys.hmacShaKeyFor(bytes);
     }
 
-    public String createToken(String username, UserRoleEnum role) {
+    public String createToken(Long userId, UserRoleEnum role) {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime exp = now.plusMinutes(TOKEN_TIME);
 
         return BEARER_PREFIX +
                 Jwts.builder()
-                        .setSubject(username) // 사용자 식별자값(ID)
+                        .setSubject(String.valueOf(userId)) // 사용자 식별자값(ID)
                         .claim(AUTHORIZATION_KEY, role) // 사용자 권한
                         .setExpiration(Date.from(exp.atZone(ZoneId.systemDefault()).toInstant())) // 만료 시간
                         .setIssuedAt(Date.from(now.atZone(ZoneId.systemDefault()).toInstant())) // 발급일

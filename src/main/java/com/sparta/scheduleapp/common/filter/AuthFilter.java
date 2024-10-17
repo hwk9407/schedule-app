@@ -58,11 +58,13 @@ public class AuthFilter implements Filter {
             // 토큰에서 사용자 정보 가져오기
             Claims info = jwtUtil.getUserInfoFromToken(tokenValue);
 
-            User user = userRepository.findByUserName(info.getSubject()).orElseThrow(() ->
+            User user = userRepository.findById(Long.valueOf(info.getSubject())).orElseThrow(() ->
                     new NullPointerException("유저를 찾을 수 없습니다.")
             );
 
-            request.setAttribute("user", user);
+            request.setAttribute("userId", user.getUserId());
+            request.setAttribute("userName", user.getUserName());
+            request.setAttribute("role", user.getRole());
             chain.doFilter(request, response); // 다음 Filter 로 이동
         }
     }
