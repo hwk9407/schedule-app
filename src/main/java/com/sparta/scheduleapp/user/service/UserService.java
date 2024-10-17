@@ -1,5 +1,6 @@
 package com.sparta.scheduleapp.user.service;
 
+import com.sparta.scheduleapp.common.dto.ResponseDto;
 import com.sparta.scheduleapp.common.config.PasswordEncoder;
 import com.sparta.scheduleapp.common.jwt.JwtUtil;
 import com.sparta.scheduleapp.entity.User;
@@ -68,7 +69,7 @@ public class UserService {
         return new AddUserResponseDto("회원가입을 성공적으로 수행하였습니다.", user.getUserId());
     }
 
-    public void login(LoginRequestDto reqDto, HttpServletResponse res) {
+    public ResponseDto login(LoginRequestDto reqDto, HttpServletResponse res) {
         User user = userRepository.findByEmail(reqDto.getEmail()).orElseThrow(
                 () -> new IllegalArgumentException("등록된 사용자가 없습니다."));
 
@@ -78,6 +79,8 @@ public class UserService {
 
         String token = jwtUtil.createToken(user.getUserId(), user.getRole());
         res.addHeader(JwtUtil.AUTHORIZATION_HEADER, token);
+
+        return new LoginResponseDto("로그인을 성공하였습니다.");
     }
 
     public ResponseDto retrieveAllUsers() {

@@ -1,11 +1,10 @@
 package com.sparta.scheduleapp.user.controller;
 
-import com.sparta.scheduleapp.schedule.dto.request.EditRequestDto;
 import com.sparta.scheduleapp.user.dto.request.CreateUserRequestDto;
 import com.sparta.scheduleapp.user.dto.request.EditUserRequestDto;
 import com.sparta.scheduleapp.user.dto.request.LoginRequestDto;
-import com.sparta.scheduleapp.user.dto.response.ResponseDto;
-import com.sparta.scheduleapp.user.dto.response.UserDto;
+import com.sparta.scheduleapp.user.dto.response.ErrorResponseDto;
+import com.sparta.scheduleapp.common.dto.ResponseDto;
 import com.sparta.scheduleapp.user.service.UserService;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -30,11 +29,12 @@ public class UserController {
     }
 
     @PostMapping("/auth/login")
-    public void login(@RequestBody LoginRequestDto reqDto, HttpServletResponse res) {
+    public ResponseEntity<ResponseDto> login(@RequestBody LoginRequestDto reqDto, HttpServletResponse res) {
         try {
-            userService.login(reqDto, res);
+            ResponseDto resDto = userService.login(reqDto, res);
+            return ResponseEntity.status(HttpStatus.OK).body(resDto);
         } catch (Exception e) {
-            throw new RuntimeException("로그인 중 에러가 발생하였습니다.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponseDto("로그인 중 에러가 발생하였습니다."));
         }
     }
 
