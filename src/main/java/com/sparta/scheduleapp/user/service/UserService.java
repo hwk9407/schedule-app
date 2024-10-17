@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class UserService {
@@ -48,6 +47,10 @@ public class UserService {
             throw new IllegalStateException("해당 사용자 이름이 이미 존재합니다.");
         });
 
+        userRepository.findByEmail(reqDto.getEmail()).ifPresent(user -> {
+            throw new IllegalStateException("해당 이메일이 이미 존재합니다.");
+        });
+
         User user = new User(
                 reqDto.getUserName(),
                 passwordEncoder.encode(reqDto.getPassword()),
@@ -59,10 +62,22 @@ public class UserService {
         userRepository.save(user);
 
         // 응답 Header에 Jwt 추가
-        String token = jwtUtil.createToken(user.getUserName(), user.getRole());
+        String token = jwtUtil.createToken(user.getUserId(), user.getRole());
         res.addHeader(JwtUtil.AUTHORIZATION_HEADER, token);
 
         return new AddUserResponseDto("회원가입을 성공적으로 수행하였습니다.", user.getUserId());
+    }
+
+    public void login(LoginRequestDto reqDto, HttpServletResponse res) {
+        User user = userRepository.findByEmail(reqDto.getEmail()).orElseThrow(
+                () -> new IllegalArgumentException("등록된 사용자가 없습니다."));
+
+        if(!passwordEncoder.matches(reqDto.getPassword(), user.getPassword())) {
+            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+        }
+
+        String token = jwtUtil.createToken(user.getUserId(), user.getRole());
+        res.addHeader(JwtUtil.AUTHORIZATION_HEADER, token);
     }
 
     public ResponseDto retrieveAllUsers() {
@@ -77,10 +92,14 @@ public class UserService {
     }
 
     @Transactional
-    public ResponseDto editUser(Long userId, EditUserRequestDto reqDto) {
+    public ResponseDto editUser(Long userId, Long jwtUserId, EditUserRequestDto reqDto) {
         User user = userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("존재하지 않는 유저입니다."));
+        if (!user.getUserId().equals(jwtUserId)) {
+            throw new IllegalArgumentException("본인 정보만 수정할 수 있습니다.");
+        }
+
         user.setUserName(reqDto.getUserName());
-        user.setEmail(reqDto.getEmail());
+        user.setPassword(passwordEncoder.encode(reqDto.getPassword()));
         user.setGender(reqDto.getGender());
 
         userRepository.save(user);
@@ -88,35 +107,16 @@ public class UserService {
     }
 
     @Transactional
-    public ResponseDto deleteUser(Long userId) {
+    public ResponseDto deleteUser(Long userId, Long jwtUserId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("존재하지 않는 유저입니다."));
 
+        if (!user.getUserId().equals(jwtUserId)) {
+            throw new IllegalArgumentException("본인만 삭제할 수 있습니다.");
+        }
+
         userRepository.delete(user);
-
-        // 유저가 관련되어있는 일정 삭제.
-        /*for (UserSchedule userschedule : user.getUserSchedules()) {
-            Schedule schedule = userschedule.getSchedule();
-            long userCount = userScheduleRepository.countBySchedule(schedule);
-
-            if (userCount == 1) {
-                scheduleRepository.delete(schedule);
-            }
-        }*/
 
         return new DeleteUserResponseDto("유저가 성공적으로 삭제되었습니다.", userId);
     }
 
-    public void login(LoginRequestDto reqDto, HttpServletResponse res) {
-        User user = userRepository.findByUserName(reqDto.getUserName()).orElseThrow(
-                () -> new IllegalArgumentException("등록된 사용자가 없습니다."));
-
-        if(!passwordEncoder.matches(reqDto.getPassword(), user.getPassword())) {
-            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
-        }
-
-        String token = jwtUtil.createToken(user.getUserName(), user.getRole());
-        res.addHeader(JwtUtil.AUTHORIZATION_HEADER, token);
-
-
-    }
 }

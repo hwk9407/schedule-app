@@ -52,14 +52,14 @@ public class UserController {
     }
 
     @PutMapping("/users/{userId}")
-    public ResponseEntity<ResponseDto> editUser(@PathVariable Long userId, @RequestBody @Valid EditUserRequestDto reqDto) {
-        ResponseDto resDto = userService.editUser(userId, reqDto);
+    public ResponseEntity<ResponseDto> editUser(@PathVariable Long userId, @RequestBody @Valid EditUserRequestDto reqDto, @RequestAttribute("userId") Long jwtUserId) {
+        ResponseDto resDto = userService.editUser(userId, jwtUserId, reqDto);
         return ResponseEntity.status(HttpStatus.OK).body(resDto);
     }
 
     @DeleteMapping("/users/{userId}")
-    public ResponseEntity<ResponseDto> deleteUser(@PathVariable Long userId) {
-        ResponseDto resDto = userService.deleteUser(userId);
+    public ResponseEntity<ResponseDto> deleteUser(@PathVariable Long userId, @RequestAttribute("userId") Long jwtUserId) {
+        ResponseDto resDto = userService.deleteUser(userId, jwtUserId);
         return ResponseEntity.status(HttpStatus.OK).body(resDto);
     }
 }
