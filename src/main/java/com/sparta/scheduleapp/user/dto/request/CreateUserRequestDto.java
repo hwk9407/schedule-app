@@ -12,7 +12,8 @@ public class CreateUserRequestDto {
     @NotBlank
     @Size(max = 20)
     private String userName;
-    // private String password;
+    @NotBlank
+    private String password;
     @NotNull
     private Gender gender;
 
