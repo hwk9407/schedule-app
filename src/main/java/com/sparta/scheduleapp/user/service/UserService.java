@@ -56,8 +56,12 @@ public class UserService {
                 UserRoleEnum.USER // 하드 코딩
         );
 
-
         userRepository.save(user);
+
+        // 응답 Header에 Jwt 추가
+        String token = jwtUtil.createToken(user.getUserName(), user.getRole());
+        res.addHeader(JwtUtil.AUTHORIZATION_HEADER, token);
+
         return new AddUserResponseDto("회원가입을 성공적으로 수행하였습니다.", user.getUserId());
     }
 
