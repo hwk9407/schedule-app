@@ -12,8 +12,11 @@ public class EditUserRequestDto {
     @NotBlank
     @Size(max = 20)
     private String userName;
+
     @NotNull
     private Gender gender;
-    @Pattern(regexp = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$", message = "유효한 이메일 주소를 입력하세요.")
-    private String email;
+
+    @NotBlank
+    @Size(min = 8, max = 16)
+    private String password;
 }
