@@ -1,6 +1,4 @@
-package com.sparta.scheduleapp.user.dto.response;
-
-import com.sparta.scheduleapp.common.dto.ResponseDto;
+package com.sparta.scheduleapp.common.dto;
 
 public class ErrorResponseDto extends ResponseDto {
 
