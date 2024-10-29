@@ -2,7 +2,12 @@ package com.sparta.scheduleapp.comment.service;
 
 import com.sparta.scheduleapp.comment.dto.request.AddCommentRequestDto;
 import com.sparta.scheduleapp.comment.dto.request.EditCommentRequestDto;
-import com.sparta.scheduleapp.comment.dto.response.*;
+
+import com.sparta.scheduleapp.comment.dto.response.AddCommentResponseDto;
+import com.sparta.scheduleapp.comment.dto.response.DeleteCommentResponseDto;
+import com.sparta.scheduleapp.comment.dto.response.EditCommentResponseDto;
+import com.sparta.scheduleapp.comment.dto.response.RetrieveCommentsResponseDto;
+import com.sparta.scheduleapp.common.dto.ResponseDto;
 import com.sparta.scheduleapp.comment.repository.CommentRepository;
 import com.sparta.scheduleapp.entity.Comment;
 import com.sparta.scheduleapp.entity.Schedule;

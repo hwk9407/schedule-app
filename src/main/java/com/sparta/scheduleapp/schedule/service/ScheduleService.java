@@ -1,5 +1,7 @@
 package com.sparta.scheduleapp.schedule.service;
 
+
+import com.sparta.scheduleapp.common.dto.ResponseDto;
 import com.sparta.scheduleapp.entity.Schedule;
 import com.sparta.scheduleapp.entity.User;
 import com.sparta.scheduleapp.entity.UserSchedule;
