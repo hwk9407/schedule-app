@@ -1,9 +1,10 @@
 package com.sparta.scheduleapp.user.controller;
 
+import com.sparta.scheduleapp.common.jwt.JwtUtil;
 import com.sparta.scheduleapp.user.dto.request.CreateUserRequestDto;
 import com.sparta.scheduleapp.user.dto.request.EditUserRequestDto;
 import com.sparta.scheduleapp.user.dto.request.LoginRequestDto;
-import com.sparta.scheduleapp.user.dto.response.ErrorResponseDto;
+import com.sparta.scheduleapp.user.dto.response.*;
 import com.sparta.scheduleapp.common.dto.ResponseDto;
 import com.sparta.scheduleapp.user.service.UserService;
 import jakarta.servlet.http.HttpServletResponse;
@@ -17,21 +18,35 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
     private final UserService userService;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService, JwtUtil jwtUtil) {
         this.userService = userService;
     }
 
     @PostMapping("/auth/signup")
     public ResponseEntity<ResponseDto> addUser(@RequestBody @Valid CreateUserRequestDto reqDto, HttpServletResponse res) {
 
-        ResponseDto resDto = userService.addUser(reqDto, res);
+        AddUserWithTokenResponseDto resWithTokenDto = userService.addUser(reqDto);
+
+        // 헤더에 토큰 추가
+        res.addHeader(JwtUtil.AUTHORIZATION_HEADER, resWithTokenDto.getToken());
+
+        // 클라이언트에 반환할 Dto로 변환
+        AddUserResponseDto resDto = new AddUserResponseDto(resWithTokenDto.getMessage(), resWithTokenDto.getUserId());
+
         return ResponseEntity.status(HttpStatus.CREATED).body(resDto);
     }
 
     @PostMapping("/auth/login")
     public ResponseEntity<ResponseDto> login(@RequestBody LoginRequestDto reqDto, HttpServletResponse res) {
         try {
-            ResponseDto resDto = userService.login(reqDto, res);
+            LoginWithTokenResponseDto resWithTokenDto = userService.login(reqDto);
+
+            // 헤더에 토큰 추가
+            res.addHeader(JwtUtil.AUTHORIZATION_HEADER, resWithTokenDto.getToken());
+
+            // 클라이언트에 반환할 Dto로 변환
+            LoginResponseDto resDto = new LoginResponseDto(resWithTokenDto.getMessage());
+
             return ResponseEntity.status(HttpStatus.OK).body(resDto);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponseDto("로그인 중 에러가 발생하였습니다."));

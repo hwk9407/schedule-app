@@ -42,7 +42,7 @@ public class UserService {
 
 
     @Transactional
-    public ResponseDto addUser(CreateUserRequestDto reqDto, HttpServletResponse res) {
+    public AddUserWithTokenResponseDto addUser(CreateUserRequestDto reqDto) {
 
         userRepository.findByUserName(reqDto.getUserName()).ifPresent(user -> {
             throw new IllegalStateException("해당 사용자 이름이 이미 존재합니다.");
@@ -62,14 +62,13 @@ public class UserService {
 
         userRepository.save(user);
 
-        // 응답 Header에 Jwt 추가
+        // 회원가입을 성공 시 jwt 토큰을 헤더에 넣어주기 위해 생성
         String token = jwtUtil.createToken(user.getUserId(), user.getRole());
-        res.addHeader(JwtUtil.AUTHORIZATION_HEADER, token);
 
-        return new AddUserResponseDto("회원가입을 성공적으로 수행하였습니다.", user.getUserId());
+        return new AddUserWithTokenResponseDto("회원가입을 성공적으로 수행하였습니다.", user.getUserId(), token);
     }
 
-    public ResponseDto login(LoginRequestDto reqDto, HttpServletResponse res) {
+    public LoginWithTokenResponseDto login(LoginRequestDto reqDto) {
         User user = userRepository.findByEmail(reqDto.getEmail()).orElseThrow(
                 () -> new IllegalArgumentException("등록된 사용자가 없습니다."));
 
@@ -77,10 +76,11 @@ public class UserService {
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
 
+        // Service 계층에서 HttpServletResponse 를 의존하는 형태는 적합하지 않음.
+        // 처리를 해야 한다면 Controlller 계층에서 처리하는 것이 적합함.
         String token = jwtUtil.createToken(user.getUserId(), user.getRole());
-        res.addHeader(JwtUtil.AUTHORIZATION_HEADER, token);
 
-        return new LoginResponseDto("로그인을 성공하였습니다.");
+        return new LoginWithTokenResponseDto("로그인을 성공하였습니다.", token);
     }
 
     public ResponseDto retrieveAllUsers() {
