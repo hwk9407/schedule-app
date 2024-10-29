@@ -2,7 +2,7 @@ package com.sparta.scheduleapp.comment.controller;
 
 import com.sparta.scheduleapp.comment.dto.request.AddCommentRequestDto;
 import com.sparta.scheduleapp.comment.dto.request.EditCommentRequestDto;
-import com.sparta.scheduleapp.comment.dto.response.ResponseDto;
+import com.sparta.scheduleapp.common.dto.ResponseDto;
 import com.sparta.scheduleapp.comment.service.CommentService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;

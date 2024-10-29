@@ -1,6 +1,6 @@
 package com.sparta.scheduleapp.comment.dto.response;
 
-import com.sparta.scheduleapp.entity.Comment;
+import com.sparta.scheduleapp.common.dto.ResponseDto;
 
 public class AddCommentResponseDto extends ResponseDto {
     private Long commentId;

@@ -2,7 +2,7 @@ package com.sparta.scheduleapp.schedule.controller;
 
 import com.sparta.scheduleapp.schedule.dto.request.CreateRequestDto;
 import com.sparta.scheduleapp.schedule.dto.request.EditRequestDto;
-import com.sparta.scheduleapp.schedule.dto.response.ResponseDto;
+import com.sparta.scheduleapp.common.dto.ResponseDto;
 import com.sparta.scheduleapp.schedule.service.ScheduleService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;

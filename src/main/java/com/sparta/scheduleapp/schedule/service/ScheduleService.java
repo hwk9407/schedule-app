@@ -1,5 +1,7 @@
 package com.sparta.scheduleapp.schedule.service;
 
+
+import com.sparta.scheduleapp.common.dto.ResponseDto;
 import com.sparta.scheduleapp.entity.Schedule;
 import com.sparta.scheduleapp.entity.User;
 import com.sparta.scheduleapp.entity.UserSchedule;
@@ -96,6 +98,7 @@ public class ScheduleService {
         return new EditResponseDto("일정이 성공적으로 수정되었습니다.", schedule);
     }
 
+    @Transactional
     public ResponseDto deleteSchedule(Long scheduleId) {
         scheduleRepository.findByScheduleId(scheduleId).orElseThrow(() -> new EntityNotFoundException("존재하지 않는 일정입니다."));
 

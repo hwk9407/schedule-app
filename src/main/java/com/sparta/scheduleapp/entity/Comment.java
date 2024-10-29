@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @Getter
@@ -22,6 +24,7 @@ public class Comment extends BaseAuditingEntity {
 
     @ManyToOne
     @JoinColumn(name = "scheduleId")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Schedule schedule;
 
     @ManyToOne
