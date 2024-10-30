@@ -1,8 +1,13 @@
 package com.sparta.scheduleapp.common.dto;
 
-public class ErrorResponseDto extends ResponseDto {
+import lombok.Getter;
 
-    public ErrorResponseDto(String message) {
+@Getter
+public class ErrorResponseDto extends ResponseDto {
+    private final String errorCode;
+
+    public ErrorResponseDto(String errorCode, String message) {
         super(message);
+        this.errorCode = errorCode;
     }
 }
