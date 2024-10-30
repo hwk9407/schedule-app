@@ -103,13 +103,19 @@ public class UserService {
         User user = userRepository.findById(userId).orElseThrow(
                 () -> new ResourceNotFoundException("ERR002", "존재하지 않는 유저입니다.")
         );
-        if (!user.getUserId().equals(jwtUserId)) {
+        User loginUser = userRepository.findById(jwtUserId).orElseThrow(
+                () -> new ResourceNotFoundException("ERR002", "존재하지 않는 유저입니다.")
+        );
+        if (!user.equals(loginUser)) {
             throw new UserAccessDeniedException("ERR003", "본인 정보만 수정할 수 있습니다.");
         }
 
-        user.setUserName(reqDto.getUserName());
-        user.setPassword(passwordEncoder.encode(reqDto.getPassword()));
-        user.setGender(reqDto.getGender());
+        checkSameUserName(reqDto.getUserName());
+        user.edit(
+                reqDto.getUserName(),
+                passwordEncoder.encode(reqDto.getPassword()),
+                reqDto.getGender()
+        );
 
         userRepository.save(user);
         return new EditUserResponseDto("유저 정보를 성공적으로 수정하였습니다.", user);
@@ -130,4 +136,10 @@ public class UserService {
         return new DeleteUserResponseDto("유저가 성공적으로 삭제되었습니다.", userId);
     }
 
+    private void checkSameUserName(String changeName) {
+        boolean duplicationFlag = userRepository.findByUserName(changeName).isPresent();
+        if (duplicationFlag) {
+            throw new ClientBadRequestException("ERR004", "이미 존재하는 이름입니다.");
+        }
+    }
 }
