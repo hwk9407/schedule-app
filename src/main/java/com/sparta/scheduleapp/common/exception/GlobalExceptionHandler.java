@@ -50,4 +50,20 @@ public class GlobalExceptionHandler {
         ResponseDto responseDto = new ResponseDto(errorMessage);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseDto); // 400
     }
+
+    // 사용자 권한이 없는 작업을 시도할 때 발생하는 예외처리
+    @ExceptionHandler(UserAccessDeniedException.class)
+    public ResponseEntity<ResponseDto> handleAccessDenied(UserAccessDeniedException ex) {
+        String errorMessage = ex.getMessage();
+        ResponseDto responseDto = new ResponseDto(errorMessage);
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(responseDto); // 403
+    }
+
+    // 잘못된 인자를 전달했을 때 발생하는 예외처리
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ResponseDto> handleIllegalArgument(IllegalArgumentException ex) {
+        String errorMessage = ex.getMessage();
+        ResponseDto responseDto = new ResponseDto(errorMessage);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseDto); // 400
+    }
 }
