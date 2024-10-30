@@ -2,6 +2,7 @@ package com.sparta.scheduleapp.schedule.service;
 
 
 import com.sparta.scheduleapp.common.dto.ResponseDto;
+import com.sparta.scheduleapp.common.exception.ResourceNotFoundException;
 import com.sparta.scheduleapp.common.exception.UserAccessDeniedException;
 import com.sparta.scheduleapp.entity.Schedule;
 import com.sparta.scheduleapp.entity.User;
@@ -12,7 +13,6 @@ import com.sparta.scheduleapp.schedule.dto.response.*;
 import com.sparta.scheduleapp.schedule.repository.ScheduleRepository;
 import com.sparta.scheduleapp.schedule.repository.UserScheduleRepository;
 import com.sparta.scheduleapp.user.repository.UserRepository;
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -40,12 +40,12 @@ public class ScheduleService {
     public ResponseDto createSchedule(Long jwtUserId, CreateRequestDto reqDto) {
         List<User> users = reqDto.getUserIds().stream()
                 .map(userId -> userRepository.findById(userId)
-                        .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 유저입니다.")))
+                        .orElseThrow(() -> new ResourceNotFoundException("ERR002", "존재하지 않는 유저입니다.")))
                 .toList();
 
         User loginUser = userRepository.findById(jwtUserId).orElse(null);
         if (!users.contains(loginUser)) {
-            throw new UserAccessDeniedException("작성자에 본인을 포함한 일정만 작성이 가능합니다.");
+            throw new UserAccessDeniedException("ERR003", "작성자에 본인을 포함한 일정만 작성이 가능합니다.");
         }
 
         Schedule schedule = new Schedule(
@@ -84,7 +84,9 @@ public class ScheduleService {
 
     public ResponseDto retrieveSchedule(Long scheduleId) {
         // 빈 객체 반환 시 에러 상태 코드 404와 함께 처리 해야함
-        Schedule schedule = scheduleRepository.findByScheduleId(scheduleId).orElseThrow(() -> new EntityNotFoundException("존재하지 않는 일정입니다."));
+        Schedule schedule = scheduleRepository.findByScheduleId(scheduleId).orElseThrow(
+                () -> new ResourceNotFoundException("ERR002", "존재하지 않는 일정입니다.")
+        );
 
         return new RetrieveResponseDto("일정을 성공적으로 조회하였습니다.", schedule);
     }
@@ -92,16 +94,20 @@ public class ScheduleService {
     @Transactional
     public ResponseDto editSchedule(Long jwtUserId, Long scheduleId, EditRequestDto reqDto) {
         // 빈 객체 반환 시 에러 상태 코드 404와 함께 처리 해야함
-        Schedule schedule = scheduleRepository.findByScheduleId(scheduleId).orElseThrow(() -> new EntityNotFoundException("존재하지 않는 일정입니다."));
+        Schedule schedule = scheduleRepository.findByScheduleId(scheduleId).orElseThrow(
+                () -> new ResourceNotFoundException("ERR002", "존재하지 않는 일정입니다.")
+        );
         User loginUser = userRepository.findById(jwtUserId).orElse(null);
         if (!schedule.getUsers().contains(loginUser)) {
-            throw new UserAccessDeniedException("본인이 속해있는 일정만 수정이 가능합니다.");
+            throw new UserAccessDeniedException("ERR003", "본인이 속해있는 일정만 수정이 가능합니다.");
         }
 
-        schedule.setTitle(reqDto.getTitle());
-        schedule.setContent(reqDto.getContent());
-        schedule.setStartDate(reqDto.getStartDate());
-        schedule.setEndDate(reqDto.getEndDate());
+        schedule.edit(
+                reqDto.getTitle(),
+                reqDto.getContent(),
+                reqDto.getStartDate(),
+                reqDto.getEndDate()
+                );
 
         scheduleRepository.save(schedule); // 생략 가능하나, 생략하면 Auditing 기능이 동작 안함
 
@@ -110,10 +116,12 @@ public class ScheduleService {
 
     @Transactional
     public ResponseDto deleteSchedule(Long jwtUserId, Long scheduleId) {
-        Schedule schedule = scheduleRepository.findByScheduleId(scheduleId).orElseThrow(() -> new EntityNotFoundException("존재하지 않는 일정입니다."));
+        Schedule schedule = scheduleRepository.findByScheduleId(scheduleId).orElseThrow(
+                () -> new ResourceNotFoundException("ERR002", "존재하지 않는 일정입니다.")
+        );
         User loginUser = userRepository.findById(jwtUserId).orElse(null);
         if (!schedule.getUsers().contains(loginUser)) {
-            throw new UserAccessDeniedException("본인이 속해있는 일정만 삭제가 가능합니다.");
+            throw new UserAccessDeniedException("ERR003", "본인이 속해있는 일정만 삭제가 가능합니다.");
         }
 
         scheduleRepository.deleteById(scheduleId);

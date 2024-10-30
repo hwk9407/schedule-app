@@ -1,7 +1,11 @@
 package com.sparta.scheduleapp.user.service;
 
-import com.sparta.scheduleapp.common.dto.ResponseDto;
 import com.sparta.scheduleapp.common.config.PasswordEncoder;
+import com.sparta.scheduleapp.common.dto.ResponseDto;
+import com.sparta.scheduleapp.common.exception.ClientBadRequestException;
+import com.sparta.scheduleapp.common.exception.LoginAuthorizationException;
+import com.sparta.scheduleapp.common.exception.ResourceNotFoundException;
+import com.sparta.scheduleapp.common.exception.UserAccessDeniedException;
 import com.sparta.scheduleapp.common.jwt.JwtUtil;
 import com.sparta.scheduleapp.entity.User;
 import com.sparta.scheduleapp.entity.UserRoleEnum;
@@ -12,8 +16,6 @@ import com.sparta.scheduleapp.user.dto.request.EditUserRequestDto;
 import com.sparta.scheduleapp.user.dto.request.LoginRequestDto;
 import com.sparta.scheduleapp.user.dto.response.*;
 import com.sparta.scheduleapp.user.repository.UserRepository;
-import jakarta.persistence.EntityNotFoundException;
-import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,11 +47,11 @@ public class UserService {
     public AddUserWithTokenResponseDto addUser(CreateUserRequestDto reqDto) {
 
         userRepository.findByUserName(reqDto.getUserName()).ifPresent(user -> {
-            throw new IllegalStateException("해당 사용자 이름이 이미 존재합니다.");
+            throw new ClientBadRequestException("ERR004", "해당 사용자 이름이 이미 존재합니다.");
         });
 
         userRepository.findByEmail(reqDto.getEmail()).ifPresent(user -> {
-            throw new IllegalStateException("해당 이메일이 이미 존재합니다.");
+            throw new ClientBadRequestException("ERR004", "해당 이메일이 이미 존재합니다.");
         });
 
         User user = new User(
@@ -70,10 +72,10 @@ public class UserService {
 
     public LoginWithTokenResponseDto login(LoginRequestDto reqDto) {
         User user = userRepository.findByEmail(reqDto.getEmail()).orElseThrow(
-                () -> new IllegalArgumentException("등록된 사용자가 없습니다."));
+                () -> new ResourceNotFoundException("ERR002", "존재하지 않는 유저입니다."));
 
         if(!passwordEncoder.matches(reqDto.getPassword(), user.getPassword())) {
-            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+            throw new LoginAuthorizationException("ERR005", "비밀번호가 일치하지 않습니다.");
         }
 
         // Service 계층에서 HttpServletResponse 를 의존하는 형태는 적합하지 않음.
@@ -90,15 +92,19 @@ public class UserService {
     }
 
     public ResponseDto retrieveUser(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("존재하지 않는 유저입니다."));
+        User user = userRepository.findById(userId).orElseThrow(
+                () -> new ResourceNotFoundException("ERR002", "존재하지 않는 유저입니다.")
+        );
         return new RetrieveUserResponseDto("유저를 성공적으로 조회하였습니다.", user);
     }
 
     @Transactional
     public ResponseDto editUser(Long userId, Long jwtUserId, EditUserRequestDto reqDto) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("존재하지 않는 유저입니다."));
+        User user = userRepository.findById(userId).orElseThrow(
+                () -> new ResourceNotFoundException("ERR002", "존재하지 않는 유저입니다.")
+        );
         if (!user.getUserId().equals(jwtUserId)) {
-            throw new IllegalArgumentException("본인 정보만 수정할 수 있습니다.");
+            throw new UserAccessDeniedException("ERR003", "본인 정보만 수정할 수 있습니다.");
         }
 
         user.setUserName(reqDto.getUserName());
@@ -111,10 +117,12 @@ public class UserService {
 
     @Transactional
     public ResponseDto deleteUser(Long userId, Long jwtUserId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("존재하지 않는 유저입니다."));
+        User user = userRepository.findById(userId).orElseThrow(
+                () -> new ResourceNotFoundException("ERR002", "존재하지 않는 유저입니다.")
+        );
 
         if (!user.getUserId().equals(jwtUserId)) {
-            throw new IllegalArgumentException("본인만 삭제할 수 있습니다.");
+            throw new UserAccessDeniedException("ERR003", "본인만 삭제할 수 있습니다.");
         }
 
         userRepository.delete(user);
