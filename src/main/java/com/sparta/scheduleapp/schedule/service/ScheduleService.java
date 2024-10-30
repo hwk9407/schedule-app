@@ -2,6 +2,7 @@ package com.sparta.scheduleapp.schedule.service;
 
 
 import com.sparta.scheduleapp.common.dto.ResponseDto;
+import com.sparta.scheduleapp.common.exception.UserAccessDeniedException;
 import com.sparta.scheduleapp.entity.Schedule;
 import com.sparta.scheduleapp.entity.User;
 import com.sparta.scheduleapp.entity.UserSchedule;
@@ -36,11 +37,16 @@ public class ScheduleService {
     }
 
     @Transactional
-    public ResponseDto createSchedule(CreateRequestDto reqDto) {
+    public ResponseDto createSchedule(Long jwtUserId, CreateRequestDto reqDto) {
         List<User> users = reqDto.getUserIds().stream()
                 .map(userId -> userRepository.findById(userId)
                         .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 유저입니다.")))
                 .toList();
+
+        User loginUser = userRepository.findById(jwtUserId).orElse(null);
+        if (!users.contains(loginUser)) {
+            throw new UserAccessDeniedException("작성자에 본인을 포함한 일정만 작성이 가능합니다.");
+        }
 
         Schedule schedule = new Schedule(
                 reqDto.getTitle(),
@@ -84,9 +90,13 @@ public class ScheduleService {
     }
 
     @Transactional
-    public ResponseDto editSchedule(Long scheduleId, EditRequestDto reqDto) {
+    public ResponseDto editSchedule(Long jwtUserId, Long scheduleId, EditRequestDto reqDto) {
         // 빈 객체 반환 시 에러 상태 코드 404와 함께 처리 해야함
         Schedule schedule = scheduleRepository.findByScheduleId(scheduleId).orElseThrow(() -> new EntityNotFoundException("존재하지 않는 일정입니다."));
+        User loginUser = userRepository.findById(jwtUserId).orElse(null);
+        if (!schedule.getUsers().contains(loginUser)) {
+            throw new UserAccessDeniedException("본인이 속해있는 일정만 수정이 가능합니다.");
+        }
 
         schedule.setTitle(reqDto.getTitle());
         schedule.setContent(reqDto.getContent());
@@ -99,8 +109,12 @@ public class ScheduleService {
     }
 
     @Transactional
-    public ResponseDto deleteSchedule(Long scheduleId) {
-        scheduleRepository.findByScheduleId(scheduleId).orElseThrow(() -> new EntityNotFoundException("존재하지 않는 일정입니다."));
+    public ResponseDto deleteSchedule(Long jwtUserId, Long scheduleId) {
+        Schedule schedule = scheduleRepository.findByScheduleId(scheduleId).orElseThrow(() -> new EntityNotFoundException("존재하지 않는 일정입니다."));
+        User loginUser = userRepository.findById(jwtUserId).orElse(null);
+        if (!schedule.getUsers().contains(loginUser)) {
+            throw new UserAccessDeniedException("본인이 속해있는 일정만 삭제가 가능합니다.");
+        }
 
         scheduleRepository.deleteById(scheduleId);
 

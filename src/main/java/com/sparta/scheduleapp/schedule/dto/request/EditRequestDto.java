@@ -10,10 +10,14 @@ import java.time.LocalDateTime;
 @Getter
 public class EditRequestDto {
     @NotNull
-    @Size(max = 20)
+    @Size(max = 50)
     private String title;
+
     @NotNull
+    @Size(max = 255)
     private String content;
+
     private LocalDateTime startDate;
+
     private LocalDateTime endDate;
 }
