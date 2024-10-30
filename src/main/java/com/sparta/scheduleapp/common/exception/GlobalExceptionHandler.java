@@ -2,6 +2,7 @@ package com.sparta.scheduleapp.common.exception;
 
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.sparta.scheduleapp.common.dto.ResponseDto;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -18,6 +19,14 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ResponseDto> handleTokenNotFound(TokenNotFoundException ex) {
         ResponseDto responseDto = new ResponseDto(ex.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseDto); // 400
+    }
+
+    // 엔티티를 찾지 못하는 예외처리
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<ResponseDto> handleEntityNotFound(EntityNotFoundException ex) {
+        String errorMessage = ex.getMessage();
+        ResponseDto responseDto = new ResponseDto(errorMessage);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseDto); // 404
     }
 
     // 유효성 검사에서 발생한 모든 오류를 예외처리

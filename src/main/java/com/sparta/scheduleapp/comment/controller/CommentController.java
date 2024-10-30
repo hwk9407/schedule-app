@@ -21,9 +21,9 @@ public class CommentController {
 
 
     @PostMapping("/schedule/{scheduleId}/comments")
-    public ResponseEntity<ResponseDto> addComment(@PathVariable Long scheduleId, @RequestBody @Valid AddCommentRequestDto reqDto) {
+    public ResponseEntity<ResponseDto> addComment(@PathVariable Long scheduleId, @RequestBody @Valid AddCommentRequestDto reqDto, @RequestAttribute("userId") Long jwtUserId) {
 
-        ResponseDto resDto = commentService.addComment(scheduleId, reqDto);
+        ResponseDto resDto = commentService.addComment(jwtUserId, scheduleId, reqDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(resDto);
     }
     @GetMapping("/schedule/{scheduleId}/comments")
@@ -34,16 +34,16 @@ public class CommentController {
     }
 
     @PutMapping("/schedule/{scheduleId}/comments/{commentId}")
-    public ResponseEntity<ResponseDto> editComment(@PathVariable Long scheduleId, @PathVariable Long commentId, @RequestBody @Valid EditCommentRequestDto reqDto) {
+    public ResponseEntity<ResponseDto> editComment(@PathVariable Long scheduleId, @PathVariable Long commentId, @RequestBody @Valid EditCommentRequestDto reqDto, @RequestAttribute("userId") Long jwtUserId) {
 
-        ResponseDto resDto = commentService.editComment(scheduleId, commentId, reqDto);
+        ResponseDto resDto = commentService.editComment(jwtUserId, scheduleId, commentId, reqDto);
         return ResponseEntity.status(HttpStatus.OK).body(resDto);
     }
 
     @DeleteMapping("/schedule/{scheduleId}/comments/{commentId}")
-    public ResponseEntity<ResponseDto> deleteComment(@PathVariable Long scheduleId, @PathVariable Long commentId) {
+    public ResponseEntity<ResponseDto> deleteComment(@PathVariable Long scheduleId, @PathVariable Long commentId, @RequestAttribute("userId") Long jwtUserId) {
 
-        ResponseDto resDto = commentService.deleteComment(scheduleId, commentId);
+        ResponseDto resDto = commentService.deleteComment(jwtUserId, scheduleId, commentId);
         return ResponseEntity.status(HttpStatus.OK).body(resDto);
     }
 }
