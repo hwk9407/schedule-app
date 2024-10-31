@@ -1,5 +1,6 @@
 package com.sparta.scheduleapp.entity;
 
+import com.sparta.scheduleapp.common.exception.ClientBadRequestException;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
@@ -58,4 +59,15 @@ public class User extends BaseAuditingEntity {
                 .map(UserSchedule::getSchedule)
                 .toList();
     }
+
+    public void edit(String userName, String password, Gender gender) {
+        if (!(userName == null || userName.isEmpty())) {
+            this.userName = userName;
+        }
+        this.password = password;
+        if (gender != null) {
+            this.gender = gender;
+        }
+    }
+
 }

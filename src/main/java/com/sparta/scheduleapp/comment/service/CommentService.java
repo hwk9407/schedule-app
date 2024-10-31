@@ -2,19 +2,19 @@ package com.sparta.scheduleapp.comment.service;
 
 import com.sparta.scheduleapp.comment.dto.request.AddCommentRequestDto;
 import com.sparta.scheduleapp.comment.dto.request.EditCommentRequestDto;
-
 import com.sparta.scheduleapp.comment.dto.response.AddCommentResponseDto;
 import com.sparta.scheduleapp.comment.dto.response.DeleteCommentResponseDto;
 import com.sparta.scheduleapp.comment.dto.response.EditCommentResponseDto;
 import com.sparta.scheduleapp.comment.dto.response.RetrieveCommentsResponseDto;
-import com.sparta.scheduleapp.common.dto.ResponseDto;
 import com.sparta.scheduleapp.comment.repository.CommentRepository;
+import com.sparta.scheduleapp.common.dto.ResponseDto;
+import com.sparta.scheduleapp.common.exception.ResourceNotFoundException;
+import com.sparta.scheduleapp.common.exception.UserAccessDeniedException;
 import com.sparta.scheduleapp.entity.Comment;
 import com.sparta.scheduleapp.entity.Schedule;
 import com.sparta.scheduleapp.entity.User;
 import com.sparta.scheduleapp.schedule.repository.ScheduleRepository;
 import com.sparta.scheduleapp.user.repository.UserRepository;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,9 +31,13 @@ public class CommentService {
     private final UserRepository userRepository;
 
     @Transactional
-    public ResponseDto addComment(Long scheduleId, AddCommentRequestDto reqDto) {
-        User user = userRepository.findById(reqDto.getUserId()).orElseThrow(() -> new EntityNotFoundException("존재하지 않는 유저입니다."));
-        Schedule schedule = scheduleRepository.findByScheduleId(scheduleId).orElseThrow(() -> new EntityNotFoundException("존재하지 않는 일정입니다."));
+    public ResponseDto addComment(Long jwtUserId, Long scheduleId, AddCommentRequestDto reqDto) {
+        User user = userRepository.findById(jwtUserId).orElseThrow(
+                () -> new ResourceNotFoundException("ERR002", "존재하지 않는 유저입니다.")
+        );
+        Schedule schedule = scheduleRepository.findByScheduleId(scheduleId).orElseThrow(
+                () -> new ResourceNotFoundException("ERR002", "존재하지 않는 일정입니다.")
+        );
         Comment comment = new Comment(
                 schedule,
                 user,
@@ -45,16 +49,28 @@ public class CommentService {
     }
 
     public ResponseDto retrieveComment(Long scheduleId) {
-        Schedule schedule = scheduleRepository.findByScheduleId(scheduleId).orElseThrow(() -> new EntityNotFoundException("존재하지 않는 일정입니다."));
+        Schedule schedule = scheduleRepository.findByScheduleId(scheduleId).orElseThrow(
+                () -> new ResourceNotFoundException("ERR002", "존재하지 않는 일정입니다.")
+        );
         List<Comment> comments = schedule.getComments();
 
         return new RetrieveCommentsResponseDto("댓글을 성공적으로 조회하였습니다.", comments);
     }
 
-    public ResponseDto editComment(Long scheduleId, Long commentId, EditCommentRequestDto reqDto) {
+    public ResponseDto editComment(Long jwtUserId, Long scheduleId, Long commentId, EditCommentRequestDto reqDto) {
+        User user = userRepository.findById(jwtUserId).orElseThrow(
+                () -> new ResourceNotFoundException("ERR002", "존재하지 않는 유저입니다.")
+        );
+        scheduleRepository.findByScheduleId(scheduleId).orElseThrow(
+                () -> new ResourceNotFoundException("ERR002", "존재하지 않는 일정입니다.")
+        );
+        Comment comment = commentRepository.getByCommentId(commentId).orElseThrow(
+                () -> new ResourceNotFoundException("ERR002", "존재하지 않는 댓글입니다.")
+        );
 
-        scheduleRepository.findByScheduleId(scheduleId).orElseThrow(() -> new EntityNotFoundException("존재하지 않는 일정입니다."));
-        Comment comment = commentRepository.getByCommentId(commentId).orElseThrow(() -> new EntityNotFoundException("존재하지 않는 댓글입니다."));
+        if (!comment.getUser().getUserId().equals(user.getUserId())) {
+            throw new UserAccessDeniedException("ERR003", "본인이 쓴 댓글만 수정할 수 있습니다.");
+        }
 
         comment.setContent(reqDto.getContent());
         commentRepository.save(comment); // 생략 가능하나, 생략하면 Auditing 기능이 동작 안함
@@ -63,9 +79,19 @@ public class CommentService {
 
     }
 
-    public ResponseDto deleteComment(Long scheduleId, Long commentId) {
-        // Schedule schedule = scheduleRepository.findByScheduleId(scheduleId).orElseThrow(() -> new EntityNotFoundException("존재하지 않는 일정입니다."));
-        Comment comment = commentRepository.getByCommentId(commentId).orElseThrow(() -> new EntityNotFoundException("존재하지 않는 댓글입니다."));
+    public ResponseDto deleteComment(Long jwtUserId, Long scheduleId, Long commentId) {
+        User user = userRepository.findById(jwtUserId).orElseThrow(
+                () -> new ResourceNotFoundException("ERR002", "존재하지 않는 유저입니다.")
+        );
+        scheduleRepository.findByScheduleId(scheduleId).orElseThrow(
+                () -> new ResourceNotFoundException("ERR002", "존재하지 않는 일정입니다.")
+        );
+        Comment comment = commentRepository.getByCommentId(commentId).orElseThrow(
+                () -> new ResourceNotFoundException("ERR002", "존재하지 않는 댓글입니다.")
+        );
+        if (!comment.getUser().getUserId().equals(user.getUserId())) {
+            throw new UserAccessDeniedException("ERR003", "본인이 쓴 댓글만 삭제할 수 있습니다.");
+        }
 
         commentRepository.deleteById(commentId);
 

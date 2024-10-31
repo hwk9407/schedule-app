@@ -1,5 +1,6 @@
 package com.sparta.scheduleapp.schedule.controller;
 
+import com.sparta.scheduleapp.common.exception.NotValidRequestException;
 import com.sparta.scheduleapp.schedule.dto.request.CreateRequestDto;
 import com.sparta.scheduleapp.schedule.dto.request.EditRequestDto;
 import com.sparta.scheduleapp.common.dto.ResponseDto;
@@ -7,6 +8,7 @@ import com.sparta.scheduleapp.schedule.service.ScheduleService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
 @RequestMapping("/api")
@@ -21,9 +23,17 @@ public class ScheduleController {
 
 
     @PostMapping("/schedule")
-    public ResponseEntity<ResponseDto> createSchedule(@RequestBody @Valid CreateRequestDto reqDto) {
+    public ResponseEntity<ResponseDto> createSchedule(@RequestBody @Valid CreateRequestDto reqDto,
+                                                      Errors errors,
+                                                      @RequestAttribute("userId") Long jwtUserId
+    ) {
+        if (errors.hasErrors()) {
+            String field = errors.getFieldError().getField();
+            String message = errors.getFieldError().getDefaultMessage();
+            throw new NotValidRequestException("ERR001", field + " 필드에 대한 에러 : " + message);
+        }
 
-        ResponseDto resDto = scheduleService.createSchedule(reqDto);
+        ResponseDto resDto = scheduleService.createSchedule(jwtUserId, reqDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(resDto);
     }
 
@@ -47,16 +57,25 @@ public class ScheduleController {
     }
 
     @PutMapping("/schedule/{scheduleId}")
-    public ResponseEntity<ResponseDto> editSchedule(@PathVariable Long scheduleId, @RequestBody @Valid EditRequestDto reqDto) {
+    public ResponseEntity<ResponseDto> editSchedule(@PathVariable Long scheduleId,
+                                                    @RequestBody @Valid EditRequestDto reqDto,
+                                                    Errors errors,
+                                                    @RequestAttribute("userId") Long jwtUserId
+    ) {
+        if (errors.hasErrors()) {
+            String field = errors.getFieldError().getField();
+            String message = errors.getFieldError().getDefaultMessage();
+            throw new NotValidRequestException("ERR001", field + " 필드에 대한 에러 : " + message);
+        }
 
-        ResponseDto responseDto = scheduleService.editSchedule(scheduleId, reqDto);
+        ResponseDto responseDto = scheduleService.editSchedule(jwtUserId, scheduleId, reqDto);
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
 
     @DeleteMapping("/schedule/{scheduleId}")
-    public ResponseEntity<ResponseDto> deleteSchedule(@PathVariable Long scheduleId) {
+    public ResponseEntity<ResponseDto> deleteSchedule(@PathVariable Long scheduleId, @RequestAttribute("userId") Long jwtUserId) {
 
-        ResponseDto responseDto = scheduleService.deleteSchedule(scheduleId);
+        ResponseDto responseDto = scheduleService.deleteSchedule(jwtUserId, scheduleId);
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
 }

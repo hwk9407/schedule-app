@@ -9,11 +9,9 @@ import lombok.Getter;
 
 @Getter
 public class EditUserRequestDto {
-    @NotBlank
     @Size(max = 20)
     private String userName;
 
-    @NotNull
     private Gender gender;
 
     @NotBlank

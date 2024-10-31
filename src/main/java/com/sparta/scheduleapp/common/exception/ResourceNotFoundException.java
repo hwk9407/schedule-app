@@ -3,9 +3,10 @@ package com.sparta.scheduleapp.common.exception;
 import lombok.Getter;
 
 @Getter
-public class LoginAuthorizationException extends RuntimeException {
+public class ResourceNotFoundException extends RuntimeException {
+
     private final String errorCode;
-    public LoginAuthorizationException(String errorCode, String message) {
+    public ResourceNotFoundException(String errorCode, String message) {
         super(message);
         this.errorCode = errorCode;
     }

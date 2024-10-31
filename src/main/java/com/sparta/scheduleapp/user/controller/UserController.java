@@ -1,5 +1,7 @@
 package com.sparta.scheduleapp.user.controller;
 
+import com.sparta.scheduleapp.common.dto.ErrorResponseDto;
+import com.sparta.scheduleapp.common.exception.NotValidRequestException;
 import com.sparta.scheduleapp.common.jwt.JwtUtil;
 import com.sparta.scheduleapp.user.dto.request.CreateUserRequestDto;
 import com.sparta.scheduleapp.user.dto.request.EditUserRequestDto;
@@ -11,6 +13,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -18,12 +21,20 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
     private final UserService userService;
 
-    public UserController(UserService userService, JwtUtil jwtUtil) {
+    public UserController(UserService userService) {
         this.userService = userService;
     }
 
     @PostMapping("/auth/signup")
-    public ResponseEntity<ResponseDto> addUser(@RequestBody @Valid CreateUserRequestDto reqDto, HttpServletResponse res) {
+    public ResponseEntity<ResponseDto> addUser(@RequestBody @Valid CreateUserRequestDto reqDto,
+                                               Errors errors,
+                                               HttpServletResponse res
+    ) {
+        if (errors.hasErrors()) {
+            String field = errors.getFieldError().getField();
+            String message = errors.getFieldError().getDefaultMessage();
+            throw new NotValidRequestException("ERR001", field + " 필드에 대한 에러 : " + message);
+        }
 
         AddUserWithTokenResponseDto resWithTokenDto = userService.addUser(reqDto);
 
@@ -38,19 +49,15 @@ public class UserController {
 
     @PostMapping("/auth/login")
     public ResponseEntity<ResponseDto> login(@RequestBody LoginRequestDto reqDto, HttpServletResponse res) {
-        try {
-            LoginWithTokenResponseDto resWithTokenDto = userService.login(reqDto);
+        LoginWithTokenResponseDto resWithTokenDto = userService.login(reqDto);
 
-            // 헤더에 토큰 추가
-            res.addHeader(JwtUtil.AUTHORIZATION_HEADER, resWithTokenDto.getToken());
+        // 헤더에 토큰 추가
+        res.addHeader(JwtUtil.AUTHORIZATION_HEADER, resWithTokenDto.getToken());
 
-            // 클라이언트에 반환할 Dto로 변환
-            LoginResponseDto resDto = new LoginResponseDto(resWithTokenDto.getMessage());
+        // 클라이언트에 반환할 Dto로 변환
+        LoginResponseDto resDto = new LoginResponseDto(resWithTokenDto.getMessage());
 
-            return ResponseEntity.status(HttpStatus.OK).body(resDto);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponseDto("로그인 중 에러가 발생하였습니다."));
-        }
+        return ResponseEntity.status(HttpStatus.OK).body(resDto);
     }
 
     @GetMapping("/users")
@@ -67,7 +74,17 @@ public class UserController {
     }
 
     @PutMapping("/users/{userId}")
-    public ResponseEntity<ResponseDto> editUser(@PathVariable Long userId, @RequestBody @Valid EditUserRequestDto reqDto, @RequestAttribute("userId") Long jwtUserId) {
+    public ResponseEntity<ResponseDto> editUser(@PathVariable Long userId,
+                                                @RequestBody @Valid EditUserRequestDto reqDto,
+                                                Errors errors,
+                                                @RequestAttribute("userId") Long jwtUserId
+    ) {
+        if (errors.hasErrors()) {
+            String field = errors.getFieldError().getField();
+            String message = errors.getFieldError().getDefaultMessage();
+            throw new NotValidRequestException("ERR001", field + " 필드에 대한 에러 : " + message);
+        }
+
         ResponseDto resDto = userService.editUser(userId, jwtUserId, reqDto);
         return ResponseEntity.status(HttpStatus.OK).body(resDto);
     }
